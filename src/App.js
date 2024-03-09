@@ -1,21 +1,15 @@
-import React, { useState } from 'react';
-import ReactPlayer from 'react-player';
+import React, { useState, useEffect, useRef } from 'react';
+import LineChart from './LineChart';
+import VideoPlayer from './VideoPlayer';
+import './App.css';
 
 function App() {
-  const [videoUrl, setVideoUrl] = useState('');
-
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setVideoUrl(url);
-    }
-  };
+  
 
   return (
-    <div>
-      <input type="file" accept="video/*" onChange={handleFileChange} />
-      {videoUrl && <ReactPlayer url={videoUrl} controls />}
+    <div className="App">
+      <VideoPlayer/>
+      
     </div>
   );
 }
