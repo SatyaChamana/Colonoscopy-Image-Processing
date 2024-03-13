@@ -1,0 +1,6 @@
+.lineChartContainer{
+    overflow-x: auto;
+    width: 500px;
+    padding: 20px;
+    margin: 10px;
+}

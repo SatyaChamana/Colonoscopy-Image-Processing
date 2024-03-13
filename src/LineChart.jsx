@@ -1,52 +1,57 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
+import './CSS/LineChart.css'
 
-const LineChart = ({data, frameClick, videoUrl}) => {
+const LineChart = ({frameClick, framesData}) => {
   const svgRef = useRef();
   const tooltipRef = useRef();
+  const data = framesData;
+
   useEffect(() => {
-    // setting up svg
-    const w = 800;
-    const h = 500;
-    const svg = d3
-      .select(svgRef.current)
-      .attr("width", w)
-      .attr("height", h)
-      .style("overflow", "visible")
-      .style("background", "#c5f6fa")
+    // Set up SVG dimensions and margins
+    const margin = { top: 20, right: 30, bottom: 30, left: 40 };
+    const width = data.length * 6 - margin.left - margin.right; // Adjusted width
+    const height = 500 - margin.top - margin.bottom;
 
-    const xScale = d3
-      .scaleLinear()
-      .domain([0, data.length ])
-      .range([0, w]);
+    // Append SVG element
+    const svg = d3.select(svgRef.current)
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+      .append("g")
+      .attr("transform", `translate(${margin.left},${margin.top})`);
 
-    const yScale = d3.scaleLinear().domain([0, 105]).range([h, 0]);
+    // Define scales
+    const xScale = d3.scaleLinear()
+      .domain([0, data.length + 1  ]) // Adjusted domain to keep scale from 0 to 600
+      .range([0, width]);
 
-    const generateScaledLine = d3
-      .line()
-      .x((d) => xScale(d.x))
-      .y((d) => yScale(d.y))
+    const yScale = d3.scaleLinear()
+      .domain([0, 100])
+      .range([height, 0]);
+
+    // Define line function
+    const line = d3.line()
+      .x(d => xScale(d.x))
+      .y(d => yScale(d.y))
       .curve(d3.curveCardinal);
 
-    
-    const xAxis = d3
-      .axisBottom(xScale)
-      .ticks(5 + data.length)
-      
-
-    const yAxis = d3.axisLeft(yScale).ticks(data.length);
-    
-    svg.append("g").call(xAxis).attr("transform", `translate(0,${h})`);
-    svg.append("g").call(yAxis);
-
-    // setting up the data for the svg
-    svg
-      .selectAll(".line")
-      .data([data])
-      .join("path")
-      .attr("d", (d) => generateScaledLine(d))
+    // Append line to SVG
+    svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line)
       .attr("fill", "none")
-      .attr("stroke", "black");
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 2);
+
+    // Append x-axis
+    svg.append("g")
+      .attr("transform", `translate(0,${height})`)
+      .call(d3.axisBottom(xScale));
+
+    // Append y-axis
+    svg.append("g")
+      .call(d3.axisLeft(yScale));
 
       svg
       .selectAll('.circle')
@@ -56,14 +61,14 @@ const LineChart = ({data, frameClick, videoUrl}) => {
       .attr('class', 'circle')
       .attr('cx', (d) => xScale(d.x))
       .attr('cy', (d) => yScale(d.y))
-      .attr('r', 2)
-      .attr('fill', 'red')
+      .attr('r', 3)
+      .attr('fill', 'black')
       .attr('stroke', 'none')
       .on('mouseover', (event, d) => {
         tooltipRef.current.style.display = 'block';
         tooltipRef.current.style.left = event.pageX + 'px';
         tooltipRef.current.style.top = event.pageY + 'px';
-        tooltipRef.current.textContent = `Value: ${d.y}`;
+        tooltipRef.current.textContent = `Value: ${d.y}, frame: ${d.x}`;
       })
       .on('mouseout', () => {
         tooltipRef.current.style.display = 'none';
@@ -71,39 +76,11 @@ const LineChart = ({data, frameClick, videoUrl}) => {
       .on('click', (event, d) => {
         frameClick(d);
       });
-
-      svg
-      .append('text')
-      .attr('x', w / 2)
-      .attr('y', h + 40)
-      .style('text-anchor', 'middle')
-      .text('Frame Difference (F2 - F1)');
-
-    svg
-      .append('text')
-      .attr('transform', 'rotate(-90)')
-      .attr('x', -h / 2)
-      .attr('y', -30)
-      .style('text-anchor', 'middle')
-      .text('% Change in Values');
-
-    svg
-      .append('text')
-      .attr('x', w / 2)
-      .attr('y', 30)
-      .style('text-anchor', 'middle')
-      .style('font-size', '18px')
-      .text('Frame Change Plot');
   }, [data]);
-
   return (
-    <div className='flex1'>
-        {videoUrl ?
-        <div>
-        <div style={{ overflowX: 'auto' }}>
-        <svg ref={svgRef} style={{ margin: "80px", display: "block" }}></svg>
-        </div>
-        <div
+    <div className='lineChartContainer flex1' >
+      <svg ref={svgRef}></svg>
+      <div
           ref={tooltipRef}
           style={{
             position: 'absolute',
@@ -115,13 +92,8 @@ const LineChart = ({data, frameClick, videoUrl}) => {
             pointerEvents: 'none',
           }}
         ></div> 
-        </div>:
-        <div className='Empty-graph-container'>
-          <h3>Upload a video to view graph</h3>
-          </div>}
     </div>
   );
 };
 
 export default LineChart;
-
