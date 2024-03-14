@@ -1,3 +1,11 @@
+@import "../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-inputs/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-navigations/styles/material.css";
+@import "../node_modules/@syncfusion/ej2-image-editor/styles/material.css";
+
 .App {
   text-align: center; /* Center aligning the content horizontally */
 }
@@ -23,21 +31,26 @@ header {
   left: 0;
 }
 
-.Chart{
+.Chart {
   display: flex;
   margin-left: 40%;
   margin-top: 20px;
 }
 
-.flex1{
+.flex1 {
   flex: 1;
 }
 
-.Empty-graph-container{
+.Empty-graph-container {
   width: 800px;
-  height:700px;
+  height: 700px;
   border: solid 3px darkgrey;
   background-color: aliceblue;
   text-align: center;
   border-radius: 15px;
+}
+
+.imageEditorContainer {
+  width: 50%;
+  margin: 20px;
 }
